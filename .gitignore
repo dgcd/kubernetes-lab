@@ -1,0 +1,31 @@
+### Gradle ###
+.gradle
+build
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### VS Code ###
+.vscode
+
+### Java ###
+*.hprof
+*.hprof.*
+
+### misc ###
+logs
+*.log
+*.db
+*.bak
+
+### OS ###
+.DS_Store
+Thumbs.db
+
+### Front dependencies ###
+node_modules
+out
+dist
