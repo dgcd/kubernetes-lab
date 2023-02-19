@@ -1,0 +1,75 @@
+shortName: kubelab-gateway
+
+##############
+# deployment #
+##############
+
+selectorLabels:
+  app: kubelab-gateway
+  tier: gateway
+
+replicaCount: 1
+autoscaling:
+  enabled: false
+
+revisionHistoryLimit: 1
+
+podAnnotations: { }
+
+image:
+  name: dgcd/reference-snapshot
+  pullPolicy: IfNotPresent
+
+containerPort: 8080
+
+env:
+  - name: TZ
+    value: Europe/Moscow
+  - name: kubelab.gateway.secret
+    valueFrom:
+      secretKeyRef:
+        name: kubelab-secrets
+        key: kubelab.gateway.secret
+
+resources:
+  limits:
+    memory: "256Mi"
+    cpu: "200m"
+  requests:
+    memory: "128Mi"
+    cpu: "100m"
+
+readinessProbeEnabled: true
+readinessProbe:
+  httpGet:
+    path: /actuator/health
+    port: 8080
+  initialDelaySeconds: 5
+  periodSeconds: 3
+
+
+###########
+# service #
+###########
+
+service:
+  type: ClusterIP
+  port: 8080
+  targetPort: 8080
+
+
+##############
+# config map #
+##############
+
+configMapPath: "/kubelab/gateway/application.properties"
+configMapSubpath: "application.properties"
+configMapName: spring-properties
+configmap:
+  spring.application.name: "kubelab-gateway"
+  spring.profiles.active: "dev"
+
+  kubelab.gateway.backend.url: "http://kubelab-backend-service:8080/rest"
+  kubelab.gateway.log.stats: "false"
+  kubelab.gateway.log.requests: "true"
+  kubelab.gateway.log.responses: "true"

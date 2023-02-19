@@ -1,0 +1,9 @@
+stages:
+  - prepare
+
+version:
+  stage: prepare
+  needs: [ ]
+  script:
+    - APP_VERSION=$(sed -n -e '/app_version/ s/.*\= *//p' gradle.properties)
+    - echo $APP_VERSION

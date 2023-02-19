@@ -1,0 +1,46 @@
+shortName: kubelab-frontend
+
+##############
+# deployment #
+##############
+
+selectorLabels:
+  app: kubelab-frontend
+  tier: frontend
+
+replicaCount: 1
+autoscaling:
+  enabled: false
+
+revisionHistoryLimit: 1
+
+podAnnotations: { }
+
+image:
+  name: dgcd/reference-snapshot
+  pullPolicy: IfNotPresent
+
+containerPort: 8888
+
+env:
+  - name: TZ
+    value: Europe/Moscow
+
+
+###########
+# service #
+###########
+
+service:
+  type: ClusterIP
+  port: 8888
+  targetPort: 8888
+
+
+##############
+# config map #
+##############
+
+##################
+# network policy #
+##################

@@ -1,0 +1,5 @@
+rootProject.name = 'kubernetes-lab'
+
+include 'api'
+include 'backend'
+include 'gateway'

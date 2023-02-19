@@ -1,0 +1,81 @@
+shortName: kubelab-nodesrv
+
+##############
+# deployment #
+##############
+
+selectorLabels:
+  app: kubelab-nodesrv
+
+replicaCount: 1
+autoscaling:
+  enabled: false
+
+revisionHistoryLimit: 1
+
+podAnnotations: { }
+
+image:
+  name: dgcd/reference-snapshot
+  pullPolicy: IfNotPresent
+
+containerPort: 8001
+
+envFrom: { }
+
+env:
+  - name: TZ
+    value: Europe/Moscow
+
+resources:
+  requests:
+    memory: 50Mi
+    cpu: 50m
+  limits:
+    memory: 200Mi
+    cpu: 200m
+
+startupProbeEnabled: true
+startupProbe:
+  httpGet:
+    path: /
+    port: 8001
+  initialDelaySeconds: 5
+  periodSeconds: 3
+  failureThreshold: 30
+
+readinessProbeEnabled: true
+readinessProbe:
+  httpGet:
+    path: /
+    port: 8001
+  initialDelaySeconds: 5
+  periodSeconds: 3
+  failureThreshold: 30
+
+livenessProbeEnabled: true
+livenessProbe:
+  httpGet:
+    path: /
+    port: 8001
+  initialDelaySeconds: 5
+  periodSeconds: 5
+
+
+###########
+# service #
+###########
+
+service:
+  type: ClusterIP
+  port: 8001
+  targetPort: 8001
+
+
+##############
+# config map #
+##############
+
+##################
+# network policy #
+##################

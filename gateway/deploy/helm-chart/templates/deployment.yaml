@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: {{ .Values.shortName }}-deployment
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- toYaml .Values.selectorLabels | nindent 4 }}
+
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+
+  selector:
+    matchLabels:
+      {{- toYaml .Values.selectorLabels | nindent 6 }}
+
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        config-service: client
+        {{- toYaml .Values.selectorLabels | nindent 8 }}
+
+    spec:
+      containers:
+        - name: {{ .Values.shortName }}-app
+          image: "{{ .Values.image.name }}@sha256:{{ .Values.image.digest }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+
+          env:
+            {{- toYaml .Values.env | nindent 12 }}
+
+          volumeMounts:
+            - name: {{ .Values.shortName }}-{{ .Values.configMapName }}
+              mountPath: {{ .Values.configMapPath }}
+              subPath: {{ .Values.configMapSubpath }}
+              readOnly: true
+
+          ports:
+            - containerPort: {{ .Values.containerPort }}
+              protocol: TCP
+
+          {{- if .Values.startupProbeEnabled }}
+          startupProbe:
+            {{- toYaml .Values.startupProbe | nindent 12 }}
+          {{- end }}
+
+          {{- if .Values.readinessProbeEnabled }}
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          {{- end }}
+
+          {{- if .Values.livenessProbeEnabled }}
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          {{- end }}
+
+          resources:
+            requests:
+              memory: {{ .Values.resources.requests.memory }}
+              cpu: {{ .Values.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.resources.limits.memory }}
+              cpu: {{ .Values.resources.limits.cpu }}
+      volumes:
+        - name: {{ .Values.shortName }}-{{ .Values.configMapName }}
+          configMap:
+            name: {{ .Values.shortName }}-{{ .Values.configMapName }}

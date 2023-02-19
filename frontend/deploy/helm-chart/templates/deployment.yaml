@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: {{ .Values.shortName }}-deployment
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- toYaml .Values.selectorLabels | nindent 4 }}
+
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+
+  selector:
+    matchLabels:
+      {{- toYaml .Values.selectorLabels | nindent 6 }}
+
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- toYaml .Values.selectorLabels | nindent 8 }}
+
+    spec:
+      containers:
+        - name: {{ .Values.shortName }}
+          image: "{{ .Values.image.name }}@sha256:{{ .Values.image.digest }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+
+          env:
+            {{- toYaml .Values.env | nindent 12 }}
+
+          ports:
+            - containerPort: {{ .Values.containerPort }}
+              protocol: TCP

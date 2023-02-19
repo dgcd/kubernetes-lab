@@ -1,0 +1,21 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+
+metadata:
+  name: nodesrv-vs
+  namespace: {{ .Values.global.namespace }}
+
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - kubelab-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /node
+      route:
+        - destination:
+            host: kubelab-nodesrv-service
+            port:
+              number: 8001

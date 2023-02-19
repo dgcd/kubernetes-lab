@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: {{ .Values.shortName }}-{{ .Values.configMapName }}
+  namespace: {{ .Values.global.namespace }}
+
+data:
+  application.properties: |+
+    {{- range $k, $v := .Values.configmap }}
+    {{ $k }}={{ $v }}
+    {{- end }}
