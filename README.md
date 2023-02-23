@@ -1,13 +1,14 @@
-#### Простая лаба на Kubernetes и Istio
+# Простая лаба на Kubernetes и Istio
 
 ![alt text](kiali.png)
 
 ## Состав лабы:
 
-- бэк (java), имеет REST-endpoint, отвечает на запрос, добавляя информацию;
-- шлюз (java), транслирует запрос от фронта к серверу, добавляя информации на входе и выходе;
-- фронт (статика на nginx), для выполнения запросов вручную;
-- простой сервер на node.js для маршрутизации запросов средствами istio минуя nginx (доступен с /node)
+- бэк (java), имеет REST-endpoint, обращается к внешнему api, отвечает на запрос, добавляя информацию;
+- шлюз (java), транслирует запрос от фронта к серверу, добавляя информацию на входе и выходе;
+- фронт (статика на nginx, Vue.js), для выполнения запросов вручную;
+- простой сервер на node.js для маршрутизации запросов средствами istio минуя nginx (доступен с /node);
+- есть доступ как через ingress, так и через Istio gateway;
 
 ## Состав конфигурации kubernetes:
 
@@ -46,7 +47,7 @@ kubectl get serviceaccount default -n kubelab-dev --output=yaml
 
 - установить чарты
     - backend
-    - gateway
+    - gateway + secret
     - nodesrv
     - frontend
     - istio
@@ -54,5 +55,7 @@ kubectl get serviceaccount default -n kubelab-dev --output=yaml
 - запустить трафик
 
 ```shell
-while true; do ./requester.sh; sleep 5; done
+while true; do ./requester_istio.sh; sleep 5; done
+# или
+while true; do ./requester_ingress.sh; sleep 5; done
 ```

@@ -1,7 +1,7 @@
 <template>
 	<dir>
 		<h3>Kubelab app</h3>
-	    <input v-model="name" placeholder="enter name">
+	    <input v-model="name" placeholder="enter name" @keydown.enter="onSend()">
 	    <button v-on:click="onSend">Send</button>
 	    <br><br>
 

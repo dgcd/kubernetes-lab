@@ -3,13 +3,13 @@
 ```shell
 ./gradlew :backend:build
 
-docker build -t dgcd/reference-snapshot:backend-1 -f ./backend/deploy/Dockerfile ./backend && \
-docker push dgcd/reference-snapshot:backend-1
+docker build -t dgcd/reference-snapshot:backend -f ./backend/deploy/Dockerfile ./backend && \
+docker push     dgcd/reference-snapshot:backend
 
 helm upgrade \
   --debug \
   --install kubelab-backend backend/deploy/helm-chart/ \
-  --set image.digest=a134dbebaa78c9818baf51a946610336b1b9c0e54a555ab2ccae2114cf54d272 \
+  --set image.digest=9bfab24fd001d47194c597ad0c96bc3323573ecd04437c832facafde763ff561 \
   --set global.namespace=kubelab-dev \
   --namespace kubelab-dev
 ```

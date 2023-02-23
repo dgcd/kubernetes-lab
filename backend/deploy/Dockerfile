@@ -1,11 +1,9 @@
-FROM eclipse-temurin:19-jre-focal
-
-LABEL maintainer="dgcd"
+FROM dgcd/reference-snapshot:java-runtime
 
 WORKDIR /kubelab/backend
 
 COPY ./build/libs/kubelab-backend.jar .
 
-EXPOSE 8080
+USER starter:starter
 
 ENTRYPOINT ["java", "-jar", "kubelab-backend.jar"]
