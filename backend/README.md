@@ -9,7 +9,7 @@ docker push     dgcd/reference-snapshot:backend
 helm upgrade \
   --debug \
   --install kubelab-backend backend/deploy/helm-chart/ \
-  --set image.digest=9bfab24fd001d47194c597ad0c96bc3323573ecd04437c832facafde763ff561 \
+  --set image.digest=1d76f7f648543cd26cf2b18e64ec3dc4bb39847a5778e6d9c6f05c342c5d14ad \
   --set global.namespace=kubelab-dev \
   --namespace kubelab-dev
 ```

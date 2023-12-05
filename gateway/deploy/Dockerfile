@@ -1,4 +1,4 @@
-FROM dgcd/reference-snapshot:java-runtime
+FROM dgcd/reference-snapshot:java-runtime-21
 
 WORKDIR /kubelab/gateway
 

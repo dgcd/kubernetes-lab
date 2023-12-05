@@ -7,7 +7,7 @@ docker push     dgcd/reference-snapshot:nodesrv
 helm upgrade \
   --debug \
   --install kubelab-nodesrv nodesrv/deploy/helm-chart/ \
-  --set image.digest=2f167ede01ca81cd8825923a07aa4c3059e8cfbb26575bdf78afd8988c586b8e \
+  --set image.digest=488d007c22dc68e7262d6944e727e82ac186618a933f361a3c294b31c5a7b32e \
   --set global.namespace=kubelab-dev \
   --namespace kubelab-dev
 ```

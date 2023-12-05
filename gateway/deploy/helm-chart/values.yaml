@@ -69,6 +69,11 @@ configmap:
   spring.application.name: "kubelab-gateway"
   spring.profiles.active: "dev"
 
+  server.shutdown: "graceful"
+  spring.threads.virtual.enabled: "true"
+  spring.lifecycle.timeout-per-shutdown-phase: "5s"
+  spring.mvc.servlet.load-on-startup: "1"
+
   kubelab.gateway.backend.url: "http://kubelab-backend-service:8080/rest"
   kubelab.gateway.log.stats: "false"
   kubelab.gateway.log.requests: "true"
