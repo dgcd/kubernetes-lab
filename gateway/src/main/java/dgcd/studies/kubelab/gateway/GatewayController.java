@@ -2,18 +2,18 @@ package dgcd.studies.kubelab.gateway;
 
 import dgcd.studies.kubelab.api.RequestDto;
 import dgcd.studies.kubelab.api.ResponseDto;
+import io.micrometer.core.annotation.Counted;
+import io.micrometer.core.annotation.Timed;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.net.InetAddress;
@@ -35,23 +35,18 @@ public class GatewayController {
     @Value("${spring.profiles.active:none}")
     private String profile;
 
-    @Value("${kubelab.gateway.backend.url:}")
-    private String serverUrl;
 
     @Value("${kubelab.gateway.secret:none}")
     private String secret;
 
     @Autowired
-    private RestTemplate restTemplate;
+    private BackendService backendService;
 
     @Value("${kubelab.gateway.log.stats:true}")
     private Boolean logStats;
 
     @Value("${kubelab.gateway.log.requests:true}")
     private Boolean logRequests;
-
-    @Value("${kubelab.gateway.log.responses:true}")
-    private Boolean logResponses;
 
 
     @PostConstruct
@@ -78,8 +73,10 @@ public class GatewayController {
 //        }
 //    }
 
+    @Timed(value = "xxx.test.time", description = "Time taken to return greeting", percentiles = {0.25, 0.5, 0.75, 0.95, 1})
+    @Counted(value = "xxx.test.count")
     @GetMapping(value = "/test", produces = TEXT_PLAIN_VALUE)
-    public String getData() {
+    public String getTestData() {
         String responseString;
         try {
             var responseDto = get(new RequestDto("test", 666L, null, null));
@@ -109,6 +106,8 @@ public class GatewayController {
     }
 
 
+    @Timed(value = "xxx.api.time", description = "Time taken to return greeting", percentiles = {0.25, 0.5, 0.75, 0.95})
+    @Counted(value = "xxx.api.count")
     @PostMapping(value = "/api", produces = APPLICATION_JSON_VALUE)
     public ResponseDto get(@RequestBody RequestDto requestDto) {
         if (logRequests) {
@@ -123,26 +122,7 @@ public class GatewayController {
         );
 
         try {
-            if (!StringUtils.hasLength(serverUrl)) {
-                log.error("no url for request!");
-                return null;
-            }
-            var responseEntity = restTemplate.postForEntity(serverUrl, newRequestDto, ResponseDto.class);
-            var responseDto = responseEntity.getBody();
-            var newResponseDto = responseDto == null ? null : new ResponseDto(
-                    responseDto.getRequestName(),
-                    responseDto.getRequestId(),
-                    responseDto.getGatewayName(),
-                    responseDto.getGatewayCounter(),
-                    responseDto.getBackendName(),
-                    responseDto.getBackendCounter(),
-                    LocalDateTime.now()
-            );
-
-            if (logResponses) {
-                log.info("get(): responseDto: {}", newResponseDto);
-            }
-            return responseDto;
+            return backendService.getResponseDto(newRequestDto);
         } catch (Exception ex) {
             ex.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
